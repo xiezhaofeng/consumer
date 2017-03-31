@@ -1,0 +1,55 @@
+def nexusurl = System.getProperty("nexusurl") ?: "${nexusurldefault}"
+
+def devrepourl="${nexusurl}/repository/maven-snapshots/"
+def relrepourl="${nexusurl}/repository/maven-releases/"
+def pubrepourl= "${nexusurl}/repository/maven-public/"
+
+println "nexus url : ${nexusurl}"
+
+buildscript {
+	ext {
+		springBootVersion = '1.4.2.RELEASE'
+		nexusurl = System.getProperty("nexusurl") ?: "http://192.168.81.66:8081"
+		 pubrepourl= "${nexusurl}/repository/maven-public/"
+	}
+	repositories {
+		mavenLocal()
+		maven { url "${pubrepourl}" } 
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = 'consumer'
+	version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+
+
+repositories {
+	mavenLocal()
+  maven { url pubrepourl } // 
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	// https://mvnrepository.com/artifact/org.projectlombok/lombok
+	compile group: 'org.projectlombok', name: 'lombok', version: '1.16.16'
+   	compile 'net.sf.json-lib:json-lib:2.4:jdk15'
+	
+	compile('org.springframework.cloud:spring-cloud-netflix:1.2.6.RELEASE')
+    compile('org.springframework.cloud:spring-cloud-starter-eureka:1.2.6.RELEASE')
+    compile('org.springframework.cloud:spring-cloud-starter-eureka-server:1.2.6.RELEASE')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
